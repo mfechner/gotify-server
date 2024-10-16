@@ -4,7 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import React, {Component, FormEvent} from 'react';
 import Container from '../common/Container';
 import DefaultPage from '../common/DefaultPage';
-import { action, makeObservable, observable } from 'mobx';
+import { action, observable } from 'mobx';
 import {observer} from 'mobx-react';
 import {inject, Stores } from '../inject';
 import * as config from '../config';
@@ -18,26 +18,6 @@ class Login extends Component<Stores<'currentUser'>> {
     private password = '';
     @observable
     private registerDialog = false;
-
-    constructor(props: any) {
-        super(props);
-        makeObservable(this);
-    }
-
-    @action
-    private setUsername = (value: string) => {
-        this.username = value;
-    };
-
-    @action
-    private setPassword = (value: string) => {
-        this.password = value;
-    };
-
-    @action
-    private setRegisterDialog = (open: boolean) => {
-        this.registerDialog = open;
-    };
 
     public render() {
         const {username, password, registerDialog} = this;
@@ -53,8 +33,9 @@ class Login extends Component<Stores<'currentUser'>> {
                                 label="Username"
                                 margin="dense"
                                 autoComplete="username"
-                                value={username}
-                                onChange={(e) => this.setUsername(e.target.value)} />
+                                defaultValue={username}
+                                onChange={(e) => (this.username = e.target.value)}
+                            />
                             <TextField
                                 variant="standard"
                                 type="password"
@@ -62,8 +43,9 @@ class Login extends Component<Stores<'currentUser'>> {
                                 label="Password"
                                 margin="normal"
                                 autoComplete="current-password"
-                                value={password}
-                                onChange={(e) => this.setPassword(e.target.value)} />
+                                defaultValue={password}
+                                onChange={(e) => (this.password = e.target.value)}
+                            />
                             <Button
                                 type="submit"
                                 variant="contained"
@@ -80,7 +62,7 @@ class Login extends Component<Stores<'currentUser'>> {
                 </Grid>
                 {registerDialog && (
                     <RegistrationDialog
-                        fClose={() => this.setRegisterDialog(false)}
+                        fClose={() => (this.registerDialog = false)}
                         fOnSubmit={this.props.currentUser.register}
                     />
                 )}
@@ -88,13 +70,11 @@ class Login extends Component<Stores<'currentUser'>> {
         );
     }
 
-    @action
     private login = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
+        // e.preventDefault();
         this.props.currentUser.login(this.username, this.password);
     };
 
-    @action
     private registerButton = () => {
         if (config.get('register'))
             return (

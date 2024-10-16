@@ -1,5 +1,5 @@
 import {BaseStore} from '../common/BaseStore';
-import { action, IObservableArray, makeObservable, observable, reaction } from 'mobx';
+import { action, IObservableArray, observable, reaction, runInAction } from 'mobx';
 import axios, {AxiosResponse} from 'axios';
 import * as config from '../config';
 import {createTransformer} from 'mobx-utils';
@@ -25,11 +25,9 @@ export class MessagesStore {
         private readonly appStore: BaseStore<IApplication>,
         private readonly snack: SnackReporter
     ) {
-        makeObservable(this);
         reaction(() => appStore.getItems(), this.createEmptyStatesForApps);
     }
 
-    @action
     private stateOf = (appId: number, create = true) => {
         if (!this.state[appId] && create) {
             this.state[appId] = this.emptyState();
@@ -53,10 +51,12 @@ export class MessagesStore {
             (resp) => resp.data
         );
 
-        state.messages.replace([...state.messages, ...pagedResult.messages]);
-        state.nextSince = pagedResult.paging.since ?? 0;
-        state.hasMore = 'next' in pagedResult.paging;
-        state.loaded = true;
+        runInAction(() => {
+            state.messages.replace([...state.messages, ...pagedResult.messages]);
+            state.nextSince = pagedResult.paging.since ?? 0;
+            state.hasMore = 'next' in pagedResult.paging;
+            state.loaded = true;
+        });
         this.loading = false;
         return Promise.resolve();
     };
@@ -158,7 +158,6 @@ export class MessagesStore {
         this.clearCache();
     };
 
-    @action
     private emptyState = (): MessagesState => ({
         messages: observable.array(),
         hasMore: true,

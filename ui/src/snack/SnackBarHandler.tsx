@@ -15,27 +15,16 @@ class SnackBarHandler extends Component<Stores<'snackManager'>> {
     private open = false;
     @observable
     private openWhen = 0;
-    @observable
-    private snackManager: any = null;
 
     private dispose: () => void = () => {};
 
-    @action
-    public componentDidMount = () => {
-        this.snackManager = this.props.snackManager;
-
-        this.dispose = reaction(
-            () => toJS(this.snackManager.counter),
-            this.onNewSnack
-        );
-    }
+    public componentDidMount = () =>
+        (this.dispose = reaction(() => this.props.snackManager.counter, this.onNewSnack));
 
     public componentWillUnmount = () => this.dispose();
 
     public render() {
-        if (!this.snackManager) return null;
-
-        const {message: current, hasNext} = this.snackManager;
+        const {message: current, hasNext} = this.props.snackManager;
         const duration = hasNext()
             ? SnackBarHandler.MIN_VISIBLE_SNACK_TIME_IN_MS
             : SnackBarHandler.MAX_VISIBLE_SNACK_TIME_IN_MS;
@@ -61,7 +50,6 @@ class SnackBarHandler extends Component<Stores<'snackManager'>> {
         );
     }
 
-    @action
     private onNewSnack = () => {
         const {open, openWhen} = this;
 
@@ -81,16 +69,14 @@ class SnackBarHandler extends Component<Stores<'snackManager'>> {
         }
     };
 
-    @action
     private openNextSnack = () => {
-        if (this.snackManager?.hasNext()) {
+        if (this.props.snackManager.hasNext()) {
             this.open = true;
             this.openWhen = Date.now();
-            this.snackManager.next();
+            this.props.snackManager.next();
         }
     };
 
-    @action
     private closeCurrentSnack = () => (this.open = false);
 }
 

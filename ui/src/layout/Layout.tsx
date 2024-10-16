@@ -1,8 +1,9 @@
 import { MuiThemeProvider, Theme, WithStyles, withStyles} from '@material-ui/core';
 import { createTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import * as React from 'react';
-import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
+import React from 'react';
+import { Routes } from 'react-router';
+import { HashRouter, Navigate, Route, Switch } from 'react-router-dom';
 import Header from './Header';
 import LoadingSpinner from '../common/LoadingSpinner';
 import Navigation from './Navigation';
@@ -18,7 +19,7 @@ import Login from '../user/Login';
 import Messages from '../message/Messages';
 import Users from '../user/Users';
 import { observer } from 'mobx-react';
-import { makeObservable, observable, action } from 'mobx';
+import { observable, action } from 'mobx';
 import { inject, Stores } from '../inject';
 import { ConnectionErrorBanner } from '../common/ConnectionErrorBanner';
 
@@ -63,22 +64,11 @@ class Layout extends React.Component<
     @observable
     private navOpen = false;
 
-    constructor(props: any) {
-        super(props);
-        makeObservable(this);
+    @action
+    private setNavOpen(open: boolean) {
+        this.navOpen = open;
     }
 
-    @action
-    private setNavOpen = (open: boolean) => {
-        this.navOpen = open;
-    };
-
-    @action
-    private setShowSettings = (show: boolean) => {
-        this.showSettings = show;
-    };
-
-    @action
     public componentDidMount() {
         const localStorageTheme = window.localStorage.getItem(localStorageThemeKey);
         if (isThemeKey(localStorageTheme)) {
@@ -88,7 +78,6 @@ class Layout extends React.Component<
         }
     }
 
-    @action
     public render() {
         const {showSettings, currentTheme} = this;
         const {
@@ -103,7 +92,7 @@ class Layout extends React.Component<
             },
         } = this.props;
         const theme = themeMap[currentTheme];
-        const loginRoute = () => (loggedIn ? <Redirect to="/" /> : <Login />);
+        const loginRoute = () => (loggedIn ? <Navigate replace to="/" /> : <Login />);
         const { version } = config.get('version');
         return (
             <MuiThemeProvider theme={theme}>
@@ -125,7 +114,7 @@ class Layout extends React.Component<
                                 version={version}
                                 loggedIn={loggedIn}
                                 toggleTheme={this.toggleTheme.bind(this)}
-                                showSettings={() => (this.setShowSettings(true))}
+                                showSettings={() => (this.showSettings = true)}
                                 logout={logout}
                                 setNavOpen={this.setNavOpen.bind(this)}
                             />
@@ -136,34 +125,23 @@ class Layout extends React.Component<
                                     setNavOpen={this.setNavOpen.bind(this)}
                                 />
                                 <main className={classes.content}>
-                                    <Switch>
-                                        {authenticating ? (
-                                            <Route path="/">
-                                                <LoadingSpinner />
-                                            </Route>
-                                        ) : null}
-                                        <Route exact path="/login" render={loginRoute} />
-                                        {loggedIn ? null : <Redirect to="/login" />}
-                                        <Route exact path="/" component={Messages} />
-                                        <Route exact path="/messages/:id" component={Messages} />
-                                        <Route
-                                            exact
-                                            path="/applications"
-                                            component={Applications}
-                                        />
-                                        <Route exact path="/clients" component={Clients} />
-                                        <Route exact path="/users" component={Users} />
-                                        <Route exact path="/plugins" component={Plugins} />
-                                        <Route
-                                            exact
-                                            path="/plugins/:id"
-                                            component={PluginDetailView}
-                                        />
-                                    </Switch>
+                                    <Routes>
+                                        {authenticating ? (<Route path="/" element={<LoadingSpinner />} />) : null}
+                                        <Route path="login" render={loginRoute} />
+                                        {loggedIn ? null : <Navigate replace to="/login" />}
+                                        <Route path="/" element={<Messages />} />
+                                        <Route path="messages/:id" element={<Messages />} />
+                                        <Route path="applications" element={<Applications />} />
+                                        <Route path="clients" element={<Clients />} />
+                                        <Route path="users" element={<Users />} />
+                                        <Route path="plugins" element={<Plugins />} >
+                                            <Route exact path=":id" element={<PluginDetailView />} />
+                                        </Route>
+                                    </Routes>
                                 </main>
                             </div>
                             {showSettings && (
-                                <SettingsDialog fClose={() => (this.setShowSettings(false))} />
+                                <SettingsDialog fClose={() => (this.showSettings = false)} />
                             )}
                             <ScrollUpButton />
                             <SnackBarHandler />
@@ -174,7 +152,6 @@ class Layout extends React.Component<
         );
     }
 
-    @action
     private toggleTheme() {
         this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
         localStorage.setItem(localStorageThemeKey, this.currentTheme);

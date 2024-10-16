@@ -6,7 +6,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import React, {Component} from 'react';
-import { action, makeObservable, observable } from 'mobx';
+import { action, observable } from 'mobx';
 import {observer} from 'mobx-react';
 import {inject, Stores} from '../inject';
 
@@ -19,18 +19,8 @@ class SettingsDialog extends Component<IProps & Stores<'currentUser'>> {
     @observable
     private pass = '';
 
-    constructor(props: any) {
-        super(props);
-        makeObservable(this);
-    }
-
-    @action
-    private setPass = (value: string) => {
-        this.pass = value;
-    }
-
     public render() {
-        this.setPass(this.pass);
+        const {pass} = this;
         const {fClose, currentUser} = this.props;
         const submitAndClose = () => {
             currentUser.changePassword(this.pass);
@@ -50,18 +40,18 @@ class SettingsDialog extends Component<IProps & Stores<'currentUser'>> {
                         margin="dense"
                         type="password"
                         label="New Password *"
-                        value={this.pass}
-                        onChange={(e) => (this.setPass(e.target.value))}
+                        defaultValue={pass}
+                        onChange={(e) => (this.pass = e.target.value)}
                         fullWidth
                     />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={fClose}>Cancel</Button>
-                    <Tooltip title={this.pass.length !== 0 ? '' : 'Password is required'}>
+                    <Tooltip title={pass.length !== 0 ? '' : 'Password is required'}>
                         <div>
                             <Button
                                 className="change"
-                                disabled={this.pass.length === 0}
+                                disabled={pass.length === 0}
                                 onClick={submitAndClose}
                                 color="primary"
                                 variant="contained">

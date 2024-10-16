@@ -15,7 +15,7 @@ import Button from '@material-ui/core/Button';
 import AddClientDialog from './AddClientDialog';
 import UpdateDialog from './UpdateClientDialog';
 import {observer} from 'mobx-react';
-import { action, makeObservable, observable } from 'mobx';
+import { action, observable } from 'mobx';
 import {inject, Stores} from '../inject';
 import {IClient} from '../types';
 import CopyableSecret from '../common/CopyableSecret';
@@ -29,26 +29,6 @@ class Clients extends Component<Stores<'clientStore'>> {
     private deleteId: false | number = false;
     @observable
     private updateId: false | number = false;
-
-    constructor(props: any) {
-        super(props);
-        makeObservable(this);
-    }
-
-    @action
-    private setShowDialog = (show: boolean) => {
-        this.showDialog = show;
-    }
-
-    @action
-    private setDeleteId = (id: false | number) => {
-        this.deleteId = id;
-    }
-
-    @action
-    private setUpdateId = (id: false | number) => {
-        this.updateId = id;
-    }
 
     public componentDidMount = () => this.props.clientStore.refresh();
 
@@ -69,7 +49,7 @@ class Clients extends Component<Stores<'clientStore'>> {
                         id="create-client"
                         variant="contained"
                         color="primary"
-                        onClick={() => (this.setShowDialog(true))}>
+                        onClick={() => (this.showDialog = true)}>
                         Create Client
                     </Button>
                 }>
@@ -92,8 +72,8 @@ class Clients extends Component<Stores<'clientStore'>> {
                                         name={client.name}
                                         value={client.token}
                                         lastUsed={client.lastUsed}
-                                        fEdit={() => (this.setUpdateId(client.id))}
-                                        fDelete={() => (this.setDeleteId(client.id))}
+                                        fEdit={() => (this.updateId = client.id)}
+                                        fDelete={() => (this.deleteId = client.id)}
                                     />
                                 ))}
                             </TableBody>
@@ -102,13 +82,13 @@ class Clients extends Component<Stores<'clientStore'>> {
                 </Grid>
                 {showDialog && (
                     <AddClientDialog
-                        fClose={() => (this.setShowDialog(false))}
+                        fClose={() => (this.showDialog = false)}
                         fOnSubmit={clientStore.create}
                     />
                 )}
                 {updateId !== false && (
                     <UpdateDialog
-                        fClose={() => (this.setUpdateId(false))}
+                        fClose={() => (this.updateId = false)}
                         fOnSubmit={(name) => clientStore.update(updateId, name)}
                         initialName={clientStore.getByID(updateId).name}
                     />
@@ -117,7 +97,7 @@ class Clients extends Component<Stores<'clientStore'>> {
                     <ConfirmDialog
                         title="Confirm Delete"
                         text={'Delete ' + clientStore.getByID(deleteId).name + '?'}
-                        fClose={() => (this.setDeleteId(false))}
+                        fClose={() => (this.deleteId = false)}
                         fOnSubmit={() => clientStore.remove(deleteId)}
                     />
                 )}

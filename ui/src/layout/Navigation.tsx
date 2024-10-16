@@ -1,7 +1,6 @@
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import {StyleRules, Theme, WithStyles, withStyles} from '@material-ui/core/styles';
-import { makeObservable } from 'mobx';
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {observer} from 'mobx-react';
@@ -51,11 +50,6 @@ class Navigation extends Component<
     { showRequestNotification: boolean }
 > {
     public state = { showRequestNotification: mayAllowPermission() };
-
-    constructor(props: any) {
-        super(props);
-        makeObservable(this);
-    }
 
     public render() {
         const {classes, loggedIn, appStore, navOpen, setNavOpen} = this.props;

@@ -1,27 +1,27 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import "./init";
+import './init';
 
+import React from 'react';
+import ReactDOM from 'react-dom';
 import 'typeface-roboto';
-import {initAxios} from './apiAuth';
+import { initAxios } from './apiAuth';
 import * as config from './config';
 import Layout from './layout/Layout';
-import {unregister} from './registerServiceWorker';
-import {CurrentUser} from './CurrentUser';
-import {AppStore} from './application/AppStore';
-import {WebSocketStore} from './message/WebSocketStore';
-import {SnackManager} from './snack/SnackManager';
-import {InjectProvider, StoreMapping} from './inject';
-import {UserStore} from './user/UserStore';
-import {MessagesStore} from './message/MessagesStore';
-import {ClientStore} from './client/ClientStore';
-import {PluginStore} from './plugin/PluginStore';
-import {registerReactions} from './reactions';
+import { unregister } from './registerServiceWorker';
+import { CurrentUser } from './CurrentUser';
+import { AppStore } from './application/AppStore';
+import { WebSocketStore } from './message/WebSocketStore';
+import { SnackManager } from './snack/SnackManager';
+import { InjectProvider, StoreMapping } from './inject';
+import { UserStore } from './user/UserStore';
+import { MessagesStore } from './message/MessagesStore';
+import { ClientStore } from './client/ClientStore';
+import { PluginStore } from './plugin/PluginStore';
+import { registerReactions } from './reactions';
 
 // the development server of vite will proxy this to the backend
 const devUrl = '/api/';
 
-const {port, hostname, protocol, pathname} = window.location;
+const { port, hostname, protocol, pathname } = window.location;
 const slashes = protocol.concat('//');
 const path = pathname.endsWith('/') ? pathname : pathname.substring(0, pathname.lastIndexOf('/'));
 const url = slashes.concat(port ? hostname.concat(':', port) : hostname) + path;
@@ -64,21 +64,22 @@ const clientJS = () => {
 
     registerReactions(stores);
 
-    stores.currentUser.tryAuthenticate().catch(() => {});
+    stores.currentUser.tryAuthenticate().catch(() => {
+    });
 
     window.onbeforeunload = () => {
         stores.wsStore.close();
     };
 
     ReactDOM.render(
-        <InjectProvider stores={stores}>
-            <Layout />
-        </InjectProvider>,
+        <React.StrictMode>
+            <InjectProvider stores={stores}>
+                <Layout/>
+            </InjectProvider>
+        </React.StrictMode>,
         document.getElementById('root')
     );
     unregister();
 };
-
-if (!new class { x: any }().hasOwnProperty('x')) throw new Error('Transpiler is not configured correctly');
 
 clientJS();
