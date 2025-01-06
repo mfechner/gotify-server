@@ -2,16 +2,16 @@ import getPort from 'get-port';
 import {spawn, exec, ChildProcess} from 'child_process';
 import {rimraf} from 'rimraf';
 import path from 'path';
-import puppeteer, {Browser, Page} from 'puppeteer';
+import {Page} from 'puppeteer';
 import fs from 'fs';
 // @ts-ignore
 import wait from 'wait-on';
 import kill from 'tree-kill';
+import {getBrowser} from './BrowserManager.ts';
 
 export interface GotifyTest {
     url: string;
     close: () => Promise<void>;
-    browser: Browser;
     page: Page;
 }
 
@@ -27,6 +27,17 @@ export const newPluginDir = async (plugins: string[]): Promise<string> => {
     return dir;
 };
 
+// newTest will do the following steps:
+// Build the go executable by executing `go build -o tmpfile app.go`
+// Execute the go binary to listen on a random port
+// Launch a new puppeteer browser or reuse an existing one that is stored in globalThis
+// Create a new context in the browser (so we have no cache and cookies from previous runs)
+// Open the gotify application in browser and wait till the page is loaded
+//
+// Provide a close callback that does:
+// Close the browser context with all pages
+// Terminate the gotify application
+// Delete the gotify binary
 export const newTest = async (pluginsDir = ''): Promise<GotifyTest> => {
     const port = await getPort();
 
@@ -38,25 +49,24 @@ export const newTest = async (pluginsDir = ''): Promise<GotifyTest> => {
 
     const gotifyURL = new URL('/', `http://localhost:${port}`);
     await waitForGotify('http-get://localhost:' + port);
-    const browser = await puppeteer.launch({
-        headless: process.env.CI === 'true',
-        args: [`--window-size=1920,1080`, '--no-sandbox'],
-    });
-    const page = await browser.newPage();
+
+    const browser = await getBrowser();
+    const context = await browser!.createBrowserContext();
+    const page = await context.newPage();
     await page.setViewport({width: 1920, height: 1080});
     await page.goto(gotifyURL.toString(), {waitUntil: 'domcontentloaded'})
         .catch((err) => console.log("Error loading url", err));
 
     return {
         close: async () => {
-            await Promise.all([
-                browser.close(),
-                await terminateGotify(gotifyInstance.pid!),
-            ]);
+            // process.stdout.write(`### Close Context and all pages\n`);
+            await context.close();
+            // process.stdout.write(`### Close Gotify\n`);
+            await terminateGotify(gotifyInstance.pid!);
+            // process.stdout.write(`### Delete Gotify Binary\n`);
             await rimraf(gotifyFile, {maxRetries: 8});
         },
         url: gotifyURL.toString(),
-        browser,
         page,
     };
 };

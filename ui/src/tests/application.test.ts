@@ -31,40 +31,40 @@ const $dialog = selector.form('#app-dialog');
 
 const waitforApp =
     (name: string, description: string, row: number): (() => Promise<void>) =>
-    async () => {
-        await waitForExists(page, $table.cell(row, Col.Name), name);
-        expect(await innerText(page, $table.cell(row, Col.Token))).toBe(hiddenToken);
-        expect(await innerText(page, $table.cell(row, Col.Description))).toBe(description);
-    };
+        async () => {
+            await waitForExists(page, $table.cell(row, Col.Name), name);
+            expect(await innerText(page, $table.cell(row, Col.Token))).toBe(hiddenToken);
+            expect(await innerText(page, $table.cell(row, Col.Description))).toBe(description);
+        };
 
 const updateApp =
     (id: number, data: {name?: string; description?: string}): (() => Promise<void>) =>
-    async () => {
-        await page.click($table.cell(id, Col.EditUpdate, '.edit'));
-        await page.waitForSelector($dialog.selector());
-        if (data.name) {
-            const nameSelector = $dialog.input('.name');
-            await clearField(page, nameSelector);
-            await page.type(nameSelector, data.name);
-        }
-        if (data.description) {
-            const descSelector = $dialog.textarea('.description');
-            await clearField(page, descSelector);
-            await page.type(descSelector, data.description);
-        }
-        await page.click($dialog.button('.update'));
-        await waitToDisappear(page, $dialog.selector());
-    };
+        async () => {
+            await page.click($table.cell(id, Col.EditUpdate, '.edit'));
+            await page.waitForSelector($dialog.selector());
+            if (data.name) {
+                const nameSelector = $dialog.input('.name');
+                await clearField(page, nameSelector);
+                await page.type(nameSelector, data.name);
+            }
+            if (data.description) {
+                const descSelector = $dialog.textarea('.description');
+                await clearField(page, descSelector);
+                await page.type(descSelector, data.description);
+            }
+            await page.click($dialog.button('.update'));
+            await waitToDisappear(page, $dialog.selector());
+        };
 
 const createApp =
     (name: string, description: string): (() => Promise<void>) =>
-    async () => {
-        await page.click('#create-app');
-        await page.waitForSelector($dialog.selector());
-        await page.type($dialog.input('.name'), name);
-        await page.type($dialog.textarea('.description'), description);
-        await page.click($dialog.button('.create'));
-    };
+        async () => {
+            await page.click('#create-app');
+            await page.waitForSelector($dialog.selector());
+            await page.type($dialog.input('.name'), name);
+            await page.type($dialog.textarea('.description'), description);
+            await page.click($dialog.button('.create'));
+        };
 
 describe.sequential('Application', () => {
     it('does login', async () => await auth.login(page));

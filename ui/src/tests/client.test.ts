@@ -24,23 +24,23 @@ enum Col {
 
 const waitForClient =
     (name: string, row: number): (() => Promise<void>) =>
-    async () => {
-        await waitForExists(page, $table.cell(row, Col.Name), name);
-    };
+        async () => {
+            await waitForExists(page, $table.cell(row, Col.Name), name);
+        };
 
 const updateClient =
     (id: number, data: {name?: string}): (() => Promise<void>) =>
-    async () => {
-        await page.click($table.cell(id, Col.Edit, '.edit'));
-        await page.waitForSelector($dialog.selector());
-        if (data.name) {
-            const nameSelector = $dialog.input('.name');
-            await clearField(page, nameSelector);
-            await page.type(nameSelector, data.name);
-        }
-        await page.click($dialog.button('.update'));
-        await waitToDisappear(page, $dialog.selector());
-    };
+        async () => {
+            await page.click($table.cell(id, Col.Edit, '.edit'));
+            await page.waitForSelector($dialog.selector());
+            if (data.name) {
+                const nameSelector = $dialog.input('.name');
+                await clearField(page, nameSelector);
+                await page.type(nameSelector, data.name);
+            }
+            await page.click($dialog.button('.update'));
+            await waitToDisappear(page, $dialog.selector());
+        };
 
 const $table = selector.table('#client-table');
 const $dialog = selector.form('#client-dialog');
