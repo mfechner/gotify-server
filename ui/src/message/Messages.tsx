@@ -26,9 +26,10 @@ const Messages = () => {
     const reloadRequired = useAppSelector((state) => state.ui.reloadRequired);
     const selectedApp = useAppSelector((state) => state.app.items.find((app) => app.id === appId));
     const apps = useAppSelector((state) => state.app.items);
+    const appName = dispatch(getAppName(appId));
+
     const messages = useSelector(selectMessages);
     const hasMore = useAppSelector((state) => state.message.hasMore);
-    const name = dispatch(getAppName(appId));
     const messagesLoaded = useAppSelector((state) => state.message.loaded);
     const hasMessages = messages.length !== 0;
 
@@ -105,7 +106,7 @@ const Messages = () => {
 
     return (
         <DefaultPage
-            title={name}
+            title={appName}
             rightControl={
                 <div>
                     <Button
