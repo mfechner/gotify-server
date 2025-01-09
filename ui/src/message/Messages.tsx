@@ -1,6 +1,7 @@
 import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import React, {useEffect, useState} from 'react';
+import {useSelector} from 'react-redux';
 import {useParams} from 'react-router';
 import {Virtuoso} from 'react-virtuoso';
 import DefaultPage from '../common/DefaultPage';
@@ -13,6 +14,7 @@ import {fetchMessages, removeMessagesByApp, removeSingleMessage} from './message
 import Message from './Message';
 import ConfirmDialog from '../common/ConfirmDialog';
 import LoadingSpinner from '../common/LoadingSpinner';
+import {selectMessages} from './message-slice.ts';
 
 const Messages = () => {
     const dispatch = useAppDispatch();
@@ -24,11 +26,7 @@ const Messages = () => {
     const reloadRequired = useAppSelector((state) => state.ui.reloadRequired);
     const selectedApp = useAppSelector((state) => state.app.items.find((app) => app.id === appId));
     const apps = useAppSelector((state) => state.app.items);
-    const messages = useAppSelector((state) =>
-        appId === -1
-            ? state.message.items
-            : state.message.items.filter((item) => item.appid === appId)
-    );
+    const messages = useSelector(selectMessages);
     const hasMore = useAppSelector((state) => state.message.hasMore);
     const name = dispatch(getAppName(appId));
     const messagesLoaded = useAppSelector((state) => state.message.loaded);

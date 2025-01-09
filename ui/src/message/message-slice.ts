@@ -1,4 +1,5 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createSelector, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {RootState} from '../store';
 import {IMessage, IPagedMessages} from '../types.ts';
 import {AllMessages} from './message-actions.ts';
 
@@ -58,6 +59,13 @@ export const messageSlice = createSlice({
     },
 });
 
+export const selectMessages = createSelector(
+    [ (state: RootState) => state.message.items, (state: RootState) => state.app.selectedItem.id ],
+    (messages: IMessage[], appid: number) => {
+        if (appid === -1) return messages;
+        return messages.filter((message) => message.appid === appid);
+    },
+);
 export const messageActions = messageSlice.actions;
 
 export default messageSlice.reducer;
