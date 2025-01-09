@@ -15,8 +15,7 @@ export const fetchClients = () => {
 
 export const deleteClient = (id: number) => {
     return async (dispatch: AppDispatch) => {
-        // do not dispatch a loading indicator as the test does not expect it
-        // dispatch(clientActions.loading(true));
+        dispatch(clientActions.loading(true));
         await axios.delete<IClient>(`${config.get('url')}client/${id}`);
         dispatch(clientActions.remove(id));
         dispatch(uiActions.addSnackMessage('Client deleted'));

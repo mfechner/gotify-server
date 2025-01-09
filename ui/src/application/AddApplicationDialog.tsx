@@ -1,3 +1,4 @@
+import {LoadingButton} from '@mui/lab';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -8,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import {NumberField} from '../common/NumberField';
 import React, {useState} from 'react';
+import {useAppSelector} from '../store';
 
 interface IProps {
     fClose: VoidFunction;
@@ -18,7 +20,7 @@ const AddDialog = ({fClose, fOnSubmit}: IProps) => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [defaultPriority, setDefaultPriority] = useState(0);
-
+    const isLoading = useAppSelector((state) => state.app.isLoading);
 
     const submitEnabled = name.length !== 0;
     const submitAndClose = async () => {
@@ -27,16 +29,10 @@ const AddDialog = ({fClose, fOnSubmit}: IProps) => {
     };
 
     return (
-        <Dialog
-            open={true}
-            onClose={fClose}
-            aria-labelledby="form-dialog-title"
-            id="app-dialog">
+        <Dialog open={true} onClose={fClose} aria-labelledby="form-dialog-title" id="app-dialog">
             <DialogTitle id="form-dialog-title">Create an application</DialogTitle>
             <DialogContent>
-                <DialogContentText>
-                    An application is allowed to send messages.
-                </DialogContentText>
+                <DialogContentText>An application is allowed to send messages.</DialogContentText>
                 <TextField
                     autoFocus
                     margin="dense"
@@ -66,21 +62,24 @@ const AddDialog = ({fClose, fOnSubmit}: IProps) => {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={fClose}>Cancel</Button>
+                <Button onClick={fClose} disabled={isLoading}>
+                    Cancel
+                </Button>
                 <Tooltip title={submitEnabled ? '' : 'name is required'}>
                     <div>
-                        <Button
+                        <LoadingButton
                             className="create"
                             disabled={!submitEnabled}
                             onClick={submitAndClose}
                             color="primary"
-                            variant="contained">
+                            variant="contained"
+                            loading={isLoading}>
                             Create
-                        </Button>
+                        </LoadingButton>
                     </div>
                 </Tooltip>
             </DialogActions>
         </Dialog>
     );
-}
+};
 export default AddDialog;

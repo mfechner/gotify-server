@@ -118,6 +118,7 @@ const Clients = () => {
                     text={'Delete ' + toDeleteClient.name + '?'}
                     fClose={() => setToDeleteClient(null)}
                     fOnSubmit={handleDeleteClient}
+                    isLoading={isLoading}
                 />
             )}
         </DefaultPage>

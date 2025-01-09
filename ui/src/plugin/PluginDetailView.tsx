@@ -2,6 +2,7 @@ import Build from '@mui/icons-material/Build';
 import Info from '@mui/icons-material/Info';
 import Refresh from '@mui/icons-material/Refresh';
 import Subject from '@mui/icons-material/Subject';
+import {LoadingButton} from '@mui/lab';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import {langs} from '@uiw/codemirror-extensions-langs';
@@ -158,6 +159,8 @@ interface IConfigurerPanelProps {
 
 const ConfigurerPanel = ({initialConfig, save}: IConfigurerPanelProps) => {
     const [unsavedChanges, setUnsavedChanges] = useState<string | null>(null);
+    const isLoading = useAppSelector((state) => state.plugin.isLoading);
+
     const onChange = useCallback(
         (value: string | null) => {
             let newConf: string | null = value;
@@ -183,15 +186,16 @@ const ConfigurerPanel = ({initialConfig, save}: IConfigurerPanelProps) => {
                 onChange={onChange}
             />
             <br />
-            <Button
+            <LoadingButton
                 variant="contained"
                 color="primary"
                 fullWidth={true}
                 disabled={unsavedChanges === null || unsavedChanges === initialConfig}
                 className="config-save"
-                onClick={handleOnSave}>
+                onClick={handleOnSave}
+                loading={isLoading}>
                 <Typography variant="button">Save</Typography>
-            </Button>
+            </LoadingButton>
         </div>
     );
 };

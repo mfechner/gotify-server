@@ -1,3 +1,4 @@
+import {LoadingButton} from '@mui/lab';
 import React, {useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -6,6 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
+import {useAppSelector} from '../store';
 
 interface IProps {
     fClose: VoidFunction;
@@ -14,6 +16,7 @@ interface IProps {
 
 const AddClientDialog = ({fClose, fOnSubmit}: IProps) => {
     const [name, setName] = useState('');
+    const isLoading = useAppSelector((state) => state.client.isLoading);
 
     const submitEnabled = name.length !== 0;
     const submitAndClose = async () => {
@@ -22,11 +25,7 @@ const AddClientDialog = ({fClose, fOnSubmit}: IProps) => {
     };
 
     return (
-        <Dialog
-            open={true}
-            onClose={fClose}
-            aria-labelledby="form-dialog-title"
-            id="client-dialog">
+        <Dialog open={true} onClose={fClose} aria-labelledby="form-dialog-title" id="client-dialog">
             <DialogTitle id="form-dialog-title">Create a client</DialogTitle>
             <DialogContent>
                 <TextField
@@ -41,19 +40,20 @@ const AddClientDialog = ({fClose, fOnSubmit}: IProps) => {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={fClose}>Cancel</Button>
-                <Tooltip
-                    placement={'bottom-start'}
-                    title={submitEnabled ? '' : 'name is required'}>
+                <Button onClick={fClose} disabled={isLoading}>
+                    Cancel
+                </Button>
+                <Tooltip placement={'bottom-start'} title={submitEnabled ? '' : 'name is required'}>
                     <div>
-                        <Button
+                        <LoadingButton
                             className="create"
                             disabled={!submitEnabled}
                             onClick={submitAndClose}
                             color="primary"
-                            variant="contained">
+                            variant="contained"
+                            loading={isLoading}>
                             Create
-                        </Button>
+                        </LoadingButton>
                     </div>
                 </Tooltip>
             </DialogActions>

@@ -15,8 +15,7 @@ export const fetchUsers = () => {
 
 export const deleteUser = (id: number) => {
     return async (dispatch: AppDispatch) => {
-        // do not dispatch a loading indicator as the test does not expect it
-        // dispatch(userActions.loading(true));
+        dispatch(userActions.loading(true));
         await axios.delete(`${config.get('url')}user/${id}`);
         dispatch(userActions.remove(id));
         dispatch(uiActions.addSnackMessage('User deleted'));

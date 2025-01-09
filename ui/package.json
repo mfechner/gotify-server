@@ -7,6 +7,7 @@
     "@emotion/styled": "11.14.0",
     "@fontsource/roboto": "5.1.1",
     "@mui/icons-material": "6.3.0",
+    "@mui/lab": "^6.0.0-beta.22",
     "@mui/material": "6.3.0",
     "@uiw/codemirror-extensions-langs": "^4.23.7",
     "@uiw/codemirror-theme-material": "^4.23.7",

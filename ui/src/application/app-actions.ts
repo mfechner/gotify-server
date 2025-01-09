@@ -19,8 +19,7 @@ export const fetchApps = () => {
 
 export const deleteApp = (id: number) => {
     return async (dispatch: AppDispatch) => {
-        // do not dispatch a loading indicator as the test does not expect it
-        // dispatch(appActions.loading(true));
+        dispatch(appActions.loading(true));
         await axios.delete(`${config.get('url')}application/${id}`);
         dispatch(appActions.remove(id));
         dispatch(uiActions.addSnackMessage('Application deleted'));

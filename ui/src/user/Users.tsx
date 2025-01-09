@@ -145,6 +145,7 @@ const Users = () => {
                     text={'Delete ' + toDeleteUser.name + '?'}
                     fClose={() => setToDeleteUser(null)}
                     fOnSubmit={handleDeleteUser}
+                    isLoading={isLoading}
                 />
             )}
         </DefaultPage>

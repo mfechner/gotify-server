@@ -1,3 +1,4 @@
+import {LoadingButton} from '@mui/lab';
 import React from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -11,9 +12,10 @@ interface IProps {
     text: string;
     fClose: VoidFunction;
     fOnSubmit: () => Promise<void>;
+    isLoading?: boolean;
 }
 
-export default function ConfirmDialog({title, text, fClose, fOnSubmit}: IProps) {
+export default function ConfirmDialog({title, text, fClose, fOnSubmit, isLoading = false}: IProps) {
     const submitAndClose = async () => {
         await fOnSubmit();
         fClose();
@@ -30,17 +32,18 @@ export default function ConfirmDialog({title, text, fClose, fOnSubmit}: IProps) 
                 <DialogContentText>{text}</DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={fClose} className="cancel">
+                <Button onClick={fClose} className="cancel" disabled={isLoading}>
                     No
                 </Button>
-                <Button
+                <LoadingButton
                     onClick={submitAndClose}
                     autoFocus
                     color="primary"
                     variant="contained"
-                    className="confirm">
+                    className="confirm"
+                    loading={isLoading}>
                     Yes
-                </Button>
+                </LoadingButton>
             </DialogActions>
         </Dialog>
     );

@@ -1,3 +1,4 @@
+import {LoadingButton} from '@mui/lab';
 import React, {useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -8,6 +9,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
+import {useAppSelector} from '../store';
 
 interface IProps {
     name?: string;
@@ -21,6 +23,7 @@ const AddEditUserDialog = ({fClose, fOnSubmit, isEdit, name: initialName = '', a
     const [name, setName] = useState(initialName);
     const [pass, setPass] = useState('');
     const [admin, setAdmin] = useState(initialAdmin);
+    const isLoading = useAppSelector((state) => state.user.isLoading);
 
     const namePresent = name.length !== 0;
     const passPresent = pass.length !== 0 || isEdit;
@@ -71,7 +74,9 @@ const AddEditUserDialog = ({fClose, fOnSubmit, isEdit, name: initialName = '', a
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={fClose}>Cancel</Button>
+                <Button onClick={fClose} disabled={isLoading}>
+                    Cancel
+                </Button>
                 <Tooltip
                     placement={'bottom-start'}
                     title={
@@ -82,14 +87,15 @@ const AddEditUserDialog = ({fClose, fOnSubmit, isEdit, name: initialName = '', a
                             : 'name is required'
                     }>
                     <div>
-                        <Button
+                        <LoadingButton
                             className="save-create"
                             disabled={!passPresent || !namePresent}
                             onClick={submitAndClose}
                             color="primary"
-                            variant="contained">
+                            variant="contained"
+                            loading={isLoading}>
                             {isEdit ? 'Save' : 'Create'}
-                        </Button>
+                        </LoadingButton>
                     </div>
                 </Tooltip>
             </DialogActions>

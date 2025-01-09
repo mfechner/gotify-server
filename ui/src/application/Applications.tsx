@@ -160,6 +160,7 @@ const Applications = () => {
                     text={'Delete ' + deleteApp.name + '?'}
                     fClose={() => setToDeleteApp(null)}
                     fOnSubmit={handleDeleteApp}
+                    isLoading={isLoading}
                 />
             )}
         </DefaultPage>

@@ -1,3 +1,4 @@
+import {LoadingButton} from '@mui/lab';
 import React, {useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -7,6 +8,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
+import {useAppSelector} from '../store';
 
 interface IProps {
     fClose: VoidFunction;
@@ -16,6 +18,7 @@ interface IProps {
 
 const UpdateClientDialog = ({fClose, fOnSubmit, initialName = ''}: IProps) => {
     const [name, setName] = useState(initialName);
+    const isLoading = useAppSelector((state) => state.client.isLoading);
 
     const submitEnabled = name.length !== 0;
     const submitAndClose = async () => {
@@ -47,17 +50,18 @@ const UpdateClientDialog = ({fClose, fOnSubmit, initialName = ''}: IProps) => {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={fClose}>Cancel</Button>
+                <Button onClick={fClose} disabled={isLoading}>Cancel</Button>
                 <Tooltip title={submitEnabled ? '' : 'name is required'}>
                     <div>
-                        <Button
+                        <LoadingButton
                             className="update"
                             disabled={!submitEnabled}
                             onClick={submitAndClose}
                             color="primary"
-                            variant="contained">
+                            variant="contained"
+                            loading={isLoading}>
                             Update
-                        </Button>
+                        </LoadingButton>
                     </div>
                 </Tooltip>
             </DialogActions>
