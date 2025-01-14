@@ -1,8 +1,9 @@
+import {Alert, SnackbarContent} from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import Close from '@mui/icons-material/Close';
 import React, {useEffect, useState} from 'react';
-import { useAppDispatch, useAppSelector} from '../store';
+import {useAppDispatch, useAppSelector} from '../store';
 import {uiActions} from '../store/ui-slice.ts';
 
 const MAX_VISIBLE_SNACK_TIME_IN_MS = 6000;
@@ -12,8 +13,8 @@ const SnackBarHandler = () => {
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const [openWhen, setOpenWhen] = useState(0);
-    const snackMessageCounter = useAppSelector(state => state.ui.snack.messages.length);
-    const snackMessage = useAppSelector(state => state.ui.snack.message);
+    const snackMessageCounter = useAppSelector((state) => state.ui.snack.messages.length);
+    const snackMessage = useAppSelector((state) => state.ui.snack.message);
 
     const closeCurrentSnack = () => setOpen(false);
 
@@ -55,7 +56,6 @@ const SnackBarHandler = () => {
             autoHideDuration={duration}
             onClose={closeCurrentSnack}
             TransitionProps={{onExited: openNextSnack}}
-            message={<span id="message-id">{snackMessage}</span>}
             action={
                 <IconButton
                     key="close"
@@ -64,8 +64,13 @@ const SnackBarHandler = () => {
                     onClick={closeCurrentSnack}>
                     <Close />
                 </IconButton>
-            }
-        />
+            }>
+            {!snackMessage?.severity ? (
+                <SnackbarContent message={snackMessage?.message} />
+            ) : (
+                <Alert severity={snackMessage?.severity}>{snackMessage?.message}</Alert>
+            )}
+        </Snackbar>
     );
 };
 

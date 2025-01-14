@@ -1,6 +1,12 @@
+import {AlertColor} from '@mui/material';
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
 export type ThemeKey = 'dark' | 'light';
+
+interface Snackmessage {
+    message: string;
+    severity: AlertColor | undefined;
+}
 
 interface UiState {
     themeKey: ThemeKey;
@@ -9,8 +15,8 @@ interface UiState {
     navOpen: boolean;
     showSettings: boolean;
     snack: {
-        messages: string[];
-        message: string | null;
+        messages: Snackmessage[];
+        message: Snackmessage | null;
     }
 }
 
@@ -22,7 +28,7 @@ const initialUiState: UiState = {
     showSettings: false,
     snack: {
         messages: [],
-        message: null,
+        message: { message: null, severity: null },
     },
 }
 
@@ -45,7 +51,7 @@ export const uiSlice = createSlice({
         setShowSettings: (state, action: PayloadAction<boolean>) => {
             state.showSettings = action.payload;
         },
-        addSnackMessage: (state, action: PayloadAction<string>) => {
+        addSnackMessage: (state, action: PayloadAction<Snackmessage>) => {
             state.snack.messages.push(action.payload);
         },
         nextSnackMessage: (state) => {

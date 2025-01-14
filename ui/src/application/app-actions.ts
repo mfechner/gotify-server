@@ -22,7 +22,7 @@ export const deleteApp = (id: number) => {
         dispatch(appActions.loading(true));
         await axios.delete(`${config.get('url')}application/${id}`);
         dispatch(appActions.remove(id));
-        dispatch(uiActions.addSnackMessage('Application deleted'));
+        dispatch(uiActions.addSnackMessage({message: 'Application deleted', severity: 'success'}));
     };
 };
 
@@ -41,7 +41,7 @@ export const uploadImage = (id: number, file: Blob) => {
         );
 
         dispatch(appActions.replace(response.data));
-        dispatch(uiActions.addSnackMessage('Application image updated'));
+        dispatch(uiActions.addSnackMessage({message: 'Application image updated', severity: 'success'}));
     };
 };
 
@@ -59,7 +59,7 @@ export const updateApp = (
             defaultPriority,
         });
         dispatch(appActions.replace(response.data));
-        dispatch(uiActions.addSnackMessage('Application updated'));
+        dispatch(uiActions.addSnackMessage({message:'Application updated', severity: 'success'}));
     };
 };
 
@@ -72,7 +72,7 @@ export const createApp = (name: string, description: string, defaultPriority: nu
             defaultPriority,
         });
         dispatch(appActions.add(response.data));
-        dispatch(uiActions.addSnackMessage('Application created'));
+        dispatch(uiActions.addSnackMessage({message:'Application created', severity: 'success'}));
     };
 };
 

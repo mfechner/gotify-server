@@ -21,10 +21,10 @@ const CopyableSecret = ({value, style}: IProps) => {
     const copyToClipboard = async () => {
         try {
             await navigator.clipboard.writeText(value);
-            dispatch(uiActions.addSnackMessage('Copied to clipboard'));
+            dispatch(uiActions.addSnackMessage({message: 'Copied to clipboard', severity: undefined}));
         } catch (error) {
             console.error('Failed to copy to clipboard:', error);
-            dispatch(uiActions.addSnackMessage('Failed to copy to clipboard'));
+            dispatch(uiActions.addSnackMessage({message: 'Failed to copy to clipboard', severity: 'error'}));
         }
     };
 
